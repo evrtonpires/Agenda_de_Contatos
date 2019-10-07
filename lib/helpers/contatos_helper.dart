@@ -28,26 +28,54 @@ class ContatoHelper {
       return db;
     }
   }
+
+  Future<Database> initDb() async {
+    //lugar onde banco de dados é armazenado
+    final databasePath = await getDatabasesPath();
+    final path = join(databasePath, "contatos.db");
+
+    //criar tabela de dados
+    return await openDatabase(path, version: 1,
+        onCreate: (Database db, int novaVersao) async {
+          await db.execute("CREATE TABLE $StringContatoTable ("
+              "$idColuna INTEGER PRIMARY KEY, "
+              "$idadeColuna INTEGER, "
+              "$nomeColuna TEXT, "
+              "$emailColuna TEXT, "
+              "$telefoneColuna TEXT, "
+              "$imgColuna TEXT"
+              ")");
+        });
+  }
+
+  Future<Contato> salvarContato(Contato c) async {
+    Database dbContato = await db;
+    await dbContato.insert(StringContatoTable, c.toMap());
+    return c;
+  }
+
+  Future<Contato> getContato(int id) async {
+    Database dbContato = await db;
+    List<Map> maps = await dbContato.query(StringContatoTable,
+        columns: [
+          idColuna,
+          idadeColuna,
+          nomeColuna,
+          emailColuna,
+          telefoneColuna,
+          imgColuna
+        ],
+        where: "$idColuna = ?",
+        whereArgs: [id]);
+
+    if (maps.length > 0) {
+      return Contato.fromMap(maps.first);
+    } else {
+      return null;
+    }
+  }
 }
 
-Future<Database> initDb() async {
-  //lugar onde banco de dados é armazenado
-  final databasePath = await getDatabasesPath();
-  final path = join(databasePath, "contatos.db");
-
-  //criar tabela de dados
-  return await openDatabase(path, version: 1,
-      onCreate: (Database db, int novaVersao) async {
-        await db.execute("CREATE TABLE $StringContatoTable ("
-            "$idColuna INTEGER PRIMARY KEY, "
-            "$idadeColuna INTEGER, "
-            "$nomeColuna TEXT, "
-            "$emailColuna TEXT, "
-            "$telefoneColuna TEXT, "
-            "$imgColuna TEXT"
-            ")");
-      });
-}
 //------------------------------------------------
 
 class Contato {
