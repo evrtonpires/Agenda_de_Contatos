@@ -1,4 +1,7 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+
+final String StringContatoTable = "StringContatoTable";
 
 final String idColuna = "idColuna";
 final String idadeColuna = "idadeColuna";
@@ -7,7 +10,45 @@ final String emailColuna = "emailColuna";
 final String telefoneColuna = "telefoneColuna";
 final String imgColuna = "imgColuna";
 
-class ContatoHelper {}
+class ContatoHelper {
+  //padrao Singleton , contem apenas 1 objeto no código
+  static final ContatoHelper _instance = ContatoHelper.interno();
+
+  factory ContatoHelper() => _instance;
+
+  ContatoHelper.interno();
+
+  Database _db;
+
+  Future<Database> get db async {
+    if (_db != null) {
+      return _db;
+    } else {
+      _db = await initDb();
+      return db;
+    }
+  }
+}
+
+Future<Database> initDb() async {
+  //lugar onde banco de dados é armazenado
+  final databasePath = await getDatabasesPath();
+  final path = join(databasePath, "contatos.db");
+
+  //criar tabela de dados
+  return await openDatabase(path, version: 1,
+      onCreate: (Database db, int novaVersao) async {
+        await db.execute("CREATE TABLE $StringContatoTable ("
+            "$idColuna INTEGER PRIMARY KEY, "
+            "$idadeColuna INTEGER, "
+            "$nomeColuna TEXT, "
+            "$emailColuna TEXT, "
+            "$telefoneColuna TEXT, "
+            "$imgColuna TEXT"
+            ")");
+      });
+}
+//------------------------------------------------
 
 class Contato {
   int id;
