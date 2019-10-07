@@ -89,7 +89,8 @@ class ContatoHelper {
 
   Future<List> getAllContatos() async {
     Database dbContato = await db;
-    List listMap = await dbContato.query("SELECT * FROM $StringContatoTable");
+    List listMap = await dbContato.rawQuery(
+        "SELECT * FROM $StringContatoTable");
 
     List<Contato> listContato = List();
 
@@ -121,6 +122,8 @@ class Contato {
   String telefone;
   String img;
 
+  Contato();
+
   //Mapa de Contato : Pegando do Map e inserindo no Contato
   Contato.fromMap(Map map) {
     id = map[idColuna];
@@ -145,4 +148,11 @@ class Contato {
     }
     return map;
   }
+
+  @override
+  String toString() {
+    return "\n$id , $idade , $nome , $email , $telefone , $img \n";
+  }
+
+
 }
