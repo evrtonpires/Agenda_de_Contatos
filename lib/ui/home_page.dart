@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:agendacontatos/helpers/contatos_helper.dart';
+import 'package:agendacontatos/ui/contato_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,11 +17,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    helper.getAllContatos().then((list) {
-      setState(() {
-        listContatos = list;
-      });
-    });
+    _getAllContatos();
   }
 
   @override
@@ -36,7 +33,9 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _exibirPaginaContato();
+        },
         backgroundColor: Colors.red,
         child: Icon(Icons.add),
       ),
@@ -108,6 +107,30 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
+      onTap: () {
+        _exibirPaginaContato(contato: listContatos[index]);
+      },
     );
+  }
+
+  _exibirPaginaContato({Contato contato}) async {
+    final recebendoContato = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ContatoPage(contato: contato)));
+    if (recebendoContato != null) {
+      if (contato != null) {
+        await helper.updateContato(contato);
+      } else {
+        await helper.salvarContato(recebendoContato);
+      }
+      _getAllContatos();
+    }
+  }
+
+  void _getAllContatos() {
+    helper.getAllContatos().then((list) {
+      setState(() {
+        listContatos = list;
+      });
+    });
   }
 }
