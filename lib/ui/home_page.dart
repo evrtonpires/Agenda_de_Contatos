@@ -9,26 +9,41 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   ContatoHelper helper = ContatoHelper();
 
+  List<Contato> listContatos = List();
+
   @override
   void initState() {
     super.initState();
-/*
-  Contato c = Contato();
-  c.idade = 23;
-  c.nome = "Lael";
-  c.email = "lael.santos@sgs.com.br";
-  c.telefone = "62983092013";
-  c.img = "imgTest";
-
-  helper.salvarContato(c);*/
-
     helper.getAllContatos().then((list) {
-      print(list);
+      setState(() {
+        listContatos = list;
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Contatos",
+          style: TextStyle(color: Colors.white, fontSize: 16),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.red,
+      ),
+      backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: Colors.red,
+        child: Icon(Icons.add),
+      ),
+      body: ListView.builder(
+          padding: EdgeInsets.all(10.0),
+          itemCount: listContatos.length,
+          itemBuilder: (context, index) {
+
+          }),
+    );
   }
 }
