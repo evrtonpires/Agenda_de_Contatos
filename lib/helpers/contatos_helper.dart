@@ -74,6 +74,41 @@ class ContatoHelper {
       return null;
     }
   }
+
+  Future<int> deletarContato(int id) async {
+    Database dbContato = await db;
+    return await dbContato
+        .delete(StringContatoTable, where: "$idColuna = ? ", whereArgs: [id]);
+  }
+
+  Future<int> updateContato(Contato c) async {
+    Database dbContato = await db;
+    return await dbContato.update(StringContatoTable, c.toMap(),
+        where: "$idColuna = ?", whereArgs: [c.id]);
+  }
+
+  Future<List> getAllContatos() async {
+    Database dbContato = await db;
+    List listMap = await dbContato.query("SELECT * FROM $StringContatoTable");
+
+    List<Contato> listContato = List();
+
+    for (Map m in listMap) {
+      listContato.add(Contato.fromMap(m));
+    }
+    return listContato;
+  }
+
+  Future<int> getNumero() async {
+    Database dbContato = await db;
+    return Sqflite.firstIntValue(
+        await dbContato.rawQuery("SELECT COUNT(*) FROM $StringContatoTable"));
+  }
+
+  Future close() async {
+    Database dbContato = await db;
+    dbContato.close();
+  }
 }
 
 //------------------------------------------------
